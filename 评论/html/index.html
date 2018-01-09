@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			li{
+				list-style: none;
+				padding: 20px 10px;
+				border-bottom: 4px solid #CCCCCC;
+			}
+			<script
+ src="http://code.jquery.com/jquery-latest.js"></script>
+		</style>
+	</head>
+	
+	<body>
+		<ul id="ul">
+			
+			
+		</ul>
+		<div>
+			<input type="text" id="texts" placeholder="名字">
+			<input type="text" id="cons" placeholder="内容">
+			<button id="btn">录入</button>
+		</div>
+		
+		
+		
+		
+		<script>
+	over()
+	function over(){
+		ajax1({
+			type:"get",
+			url:"http://localhost:8000/get",
+			success:function(da){
+				var arr = eval('('+da+')')
+//				console.log()
+var str = ''
+				for(var i=0;i<arr.length;i++){
+					str+=`<a href="http://localhost:8000/text.html?uid=${arr[i].uid}">
+					<li>新闻人${arr[i].text} ${arr[i].good}</li>
+					
+					</a><button uid='${arr[i].uid}' id='op' > 删除</button>
+					    `
+				}
+				ul.innerHTML = str
+			},
+			error:function(da){
+				console.log(da)
+			}
+		  })
+	}
+		
+		
+		btn.onclick = function(){
+			ajax1({
+			type:"get",
+			url:"http://localhost:8000/lu",
+			data:{
+				text:texts.value,
+				con:cons.value
+			},
+			success:function(da){
+				console.log(da)
+                over()
+			},
+			error:function(da){
+				console.log(da)
+			}
+		  })
+		}
+		 function ajax1(text){
+        	
+        	var xhr = new XMLHttpRequest()
+        	if(text.type == "get"){
+    //这里是get
+        xhr.open('get',text.url+'?'+strUrl(text.data),true)
+        xhr.send()
+        	}else{
+        		//这里是post
+        		xhr.open('post',text.url,true)
+		xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+                xhr.send(strUrl(text.data))
+        	}
+        	xhr.onreadystatechange = function(){
+        		if(xhr.readyState == 4){
+        			if(xhr.status>=200&&xhr.status<300 || xhr.status==304){
+        			  text.success(xhr.responseText)
+        			}else{
+        				text.error(xhr.status)
+        			}
+        		}
+        	}
+        	
+        	function strUrl(json){
+			var arr = []
+		    for(i in json){
+			arr.push(i+'='+json[i])
+		    }
+		    var str = arr.join('&')
+		    return str
+		   
+		    }
+        }	
+		
+		
+	</script>
+	</body>
+</html>
